@@ -1,45 +1,155 @@
-# Starter template for automatic deployment to github pages
+# WebRTC Peer-to-Peer Communication Demo Project
 
 [简体中文](./README.md) | English
 
-**Using Vue3 + Typescript + Vite**
+**Using Vue3 + TypeScript + Vite + PeerJS + Trystero**
 
-GitHub Actions is pre-configured, and pushing code to the master branch will automatically deploy the project to GitHub Pages to generate a preview page.
+This is a WebRTC peer-to-peer communication demo project that demonstrates how to implement direct browser-to-browser communication using PeerJS and Trystero libraries.
 
-## Why use it
+## Project Overview
 
- - Only requires one operation, no additional configuration needed.
- - No need to modify YAML files, it automatically selects the package manager based on the package.json packageManager configuration to ensure consistent behavior.
- - No unnecessary branches will be created.
+This project demonstrates two different WebRTC implementation approaches:
 
-## Usage
+1. **PeerJS Implementation** - Traditional peer-to-peer connection approach
+2. **Trystero Implementation** - Room-based multi-user communication approach
 
-You only need to go to GitHub Repository `Setting > Pages > Source` and select GitHub Actions
+## Features
 
-![image](https://github.com/l123wx/vite-vue-github-pages/assets/48666585/77d1bcf1-a066-4a63-8423-e16491815048)
+- ✅ Create Peer instance and connect to signaling server
+- ✅ Establish peer-to-peer data connections
+- ✅ Send and receive text messages
+- ✅ Support for two WebRTC library implementations
+- ✅ Local signaling server configuration
+- ✅ Modern frontend with Vue 3 + TypeScript
 
-Subsequent code pushed to the master branch will be automatically packaged and deployed to GitHub Pages.
+## Technology Stack
 
-## Use in Other Projects
+- **Frontend Framework**: Vue 3 + Composition API
+- **Development Tools**: Vite + TypeScript
+- **WebRTC Libraries**:
+  - PeerJS (v1.5.4) - Simplifies WebRTC connections
+  - Trystero (v0.20.0) - Room-based communication
+- **Routing**: Vue Router 4
+- **Package Manager**: pnpm
+- **Signaling Server**: PeerServer (Node.js)
 
-Copy the `.github/workflows/main.yml` file to the project you want to transform, and adjust the packaging steps according to the actual situation of the project:
+## Project Structure
 
-```yaml
-# Install dependencies
-- name: Install dependencies
-  run: ni
-# Build the project
-- name: Build
-  run: nr build
+```
+peerjs-webrtc-demo/
+├── src/
+│   ├── views/
+│   │   ├── index.vue      # PeerJS implementation page
+│   │   └── trystero.vue   # Trystero implementation page
+│   ├── router/index.ts    # Routing configuration
+│   ├── App.vue           # Main application component
+│   └── main.ts           # Application entry point
+├── server/
+│   ├── index.js          # PeerServer signaling server
+│   └── key/              # SSL certificates directory
+└── package.json
 ```
 
-We use the `@antfu/ni` library to automatically detect the package manager. `ni` is equivalent to `npm install`, `nr` is equivalent to `npm run`.More commands can be found in [the official documentation](https://github.com/antfu-collective/ni#ni).
+## Quick Start
 
-The default `Jekyll` package path is `dist`. If the project build output path is not `dist`, you can modify the source of Build with Jekyll step:
+### 1. Install Dependencies
 
-```yaml
-- name: Build with Jekyll
-  uses: actions/jekyll-build-pages@v1
-  with:
-    source: ./dist
+```bash
+# Install frontend dependencies
+pnpm install
+
+# Install server dependencies
+cd server
+pnpm install
+cd ..
 ```
+
+### 2. Start Signaling Server
+
+```bash
+cd server
+pnpm dev
+```
+
+The signaling server will start at `http://localhost:9000`.
+
+### 3. Start Frontend Application
+
+```bash
+# In a new terminal
+pnpm dev
+```
+
+The frontend application will start at `http://localhost:5173`.
+
+### 4. Use the Application
+
+1. Open browser and visit `http://localhost:5173`
+2. In the first browser tab:
+   - Enter your ID (e.g., "user1")
+   - Click "create peer" button
+3. In the second browser tab:
+   - Enter your ID (e.g., "user2")
+   - Click "create peer" button
+   - Enter "user1" in the "targetId" input
+   - Click "connect" button
+4. Now both tabs are connected and can send messages to each other
+
+## Routing
+
+- `/` - PeerJS implementation page
+- `/trystero` - Trystero implementation page
+
+## Configuration
+
+### Signaling Server Configuration (`server/index.js`)
+
+```javascript
+const peerServer = PeerServer({
+    port: 9000,           // Server port
+    path: '/myapp',       // Path prefix
+    // ssl: {             // Enable HTTPS (requires certificates)
+    //     key: fs.readFileSync('./key/server.key'),
+    //     cert: fs.readFileSync('./key/server.crt')
+    // },
+})
+```
+
+### Frontend Peer Configuration (`src/views/index.vue`)
+
+```javascript
+peer = new Peer(myId.value, {
+  host: "localhost",      // Signaling server address
+  port: 9000,             // Signaling server port
+  path: '/myapp'          // Path prefix
+});
+```
+
+## Development
+
+### Adding New Features
+
+1. Create new Vue components in `src/views/` directory
+2. Add route configuration in `src/router/index.ts`
+3. Implement WebRTC related functionality
+
+### Debugging Tips
+
+- Open browser developer tools to view console logs
+- Check network requests to ensure connection to signaling server
+- Use `console.log` to debug connection status
+
+## Deployment to GitHub Pages
+
+This project is configured with GitHub Actions for automatic deployment to GitHub Pages. Pushing code to the master branch will automatically trigger the deployment workflow.
+
+## Related Resources
+
+- [PeerJS Documentation](https://peerjs.com/docs/)
+- [Trystero Documentation](https://github.com/dmotz/trystero)
+- [WebRTC Official Documentation](https://webrtc.org/)
+- [Vue 3 Documentation](https://vuejs.org/)
+
+## License
+
+MIT

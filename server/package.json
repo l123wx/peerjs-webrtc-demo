@@ -1,0 +1,12 @@
+{
+  "name": "server",
+  "private": true,
+  "version": "0.0.1",
+  "scripts": {
+    "dev": "node index.js"
+  },
+  "dependencies": {
+    "peer": "^1.0.2"
+  },
+  "packageManager": "pnpm@9.5.0"
+}
